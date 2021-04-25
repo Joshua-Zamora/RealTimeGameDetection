@@ -71,7 +71,7 @@ def main():
     identifiers = ['0', '1', '2', '3',
                    '4', '5', '6', '7',
                    '8', '9', 'P', 'R',
-                   'S', 'E', 'U', 'W', 'U']  # Card identities
+                   'S', '4', 'E', 'W', 'U']  # Card identities
 
     cap = cv2.VideoCapture(0)  # May need this parameter -> CAP_DSHOW
     cap.set(3, 1280)
@@ -86,7 +86,7 @@ def main():
 
         best_match, coordinates, index = get_best_match_info(baselines, keys_descriptors, frame)
 
-        if index < 14:  # If image is colored
+        if index < 13:  # If image is colored
             best_match = cards[get_card_color(coordinates, frame) + '-' + identifiers[index]]
         else:
             best_match = cards[identifiers[index]]

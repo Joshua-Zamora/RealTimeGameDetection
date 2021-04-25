@@ -20,7 +20,7 @@ def save_all_cards():
     path = './cards/'
     cards = dict()
     cards['4'] = plt.imread(path + '4.png')
-    cards['E'] = plt.imread(path + '4.png')
+    cards['E'] = plt.imread(path + 'E.png')
     cards['U'] = plt.imread(path + 'U.png')
     cards['W'] = plt.imread(path + 'W.png')
     cards['G-0'] = plt.imread(path + 'G-0.png')
