@@ -1,6 +1,6 @@
 import numpy as np
 from matplotlib import pyplot as plt
-import os
+import os, cv2
 
 
 def save_card_baselines():
@@ -77,6 +77,19 @@ def save_all_cards():
     cards['Y-S'] = plt.imread(path + 'Y-S.png')
 
     np.save('all_cards.npy', [cards])
+
+
+def get_keys_and_descriptors():
+    orb = cv2.ORB_create()
+
+    cards = np.load('baselines.npy', allow_pickle=True)
+    keys_descriptors = [None] * len(cards)
+
+    for i in range(len(cards)):
+        keys, descriptor = orb.detectAndCompute(cards[i], mask=None)
+        keys_descriptors[i] = [keys, descriptor]
+
+    return keys_descriptors
 
 
 def read_images(image_dir):
