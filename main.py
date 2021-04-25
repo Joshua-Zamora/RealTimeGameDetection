@@ -15,7 +15,6 @@ def select_matches_ransac(pts0, pts1):
 def get_best_match_info(cards, keys_descriptors, frame):
     most_matches = 0  # Keeps track of most Orb matches
     index = None  # Index # of image
-    best_match = None  # Best matching image
     coordinates = None  # Coordinates of the orb similarities
 
     frame_keys, frame_desc = orb.detectAndCompute(frame, mask=None)
@@ -34,11 +33,10 @@ def get_best_match_info(cards, keys_descriptors, frame):
 
         if current_coordinates.shape[0] > most_matches:
             most_matches = current_coordinates.shape[0]
-            best_match = cards[i]
             coordinates = current_coordinates
             index = i
 
-    return best_match, coordinates, index
+    return coordinates, index
 
 
 def get_card_color(coordinates, match):
@@ -84,7 +82,7 @@ def main():
             break
         cv2.imshow('frame', frame)  # Show web cam frame
 
-        best_match, coordinates, index = get_best_match_info(baselines, keys_descriptors, frame)
+        coordinates, index = get_best_match_info(baselines, keys_descriptors, frame)
 
         if index < 13:  # If image is colored
             best_match = cards[get_card_color(coordinates, frame) + '-' + identifiers[index]]
