@@ -51,11 +51,14 @@ def get_card_color(coordinates, match):
     min_x = np.amin(coordinates[:, 0]).astype('int')
     min_y = np.amin(coordinates[:, 1]).astype('int')
 
-    red = np.mean(match[min_x: max_x, min_y: max_y][:, :, 2])  # Average red channel value
-    green = np.mean(match[min_x: max_x, min_y: max_y][:, :, 1])  # Average green channel value
-    blue = np.mean(match[min_x: max_x, min_y: max_y][:, :, 0])  # Average blue channel value
+    sub_arr = np.copy(match[min_y: max_y, min_x: max_x])
+    sub_arr[np.all(sub_arr > (200, 200, 200), axis=-1)] = (0, 0, 0)
 
-    if red > 175 and green > 175 and blue < 75:  # Yellow color is defined by (255, 255, 0)
+    red = np.mean(sub_arr[:, :, 2])  # Average red channel value
+    green = np.mean(sub_arr[:, :, 1])  # Average green channel value
+    blue = np.mean(sub_arr[:, :, 0])  # Average blue channel value
+
+    if (red - 40) > blue and (green - 40) > blue:  # Yellow color is defined by (255, 255, 0)
         color = 'Y'
     elif red > green and red > blue:
         color = 'R'
