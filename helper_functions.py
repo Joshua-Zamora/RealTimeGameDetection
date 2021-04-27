@@ -32,7 +32,7 @@ def save_card_baselines():
             plt.imread(path + 'G-S.png'), plt.imread(path + '4.png'), plt.imread(path + 'E.png'),
             plt.imread(path + 'W.png'), plt.imread(path + 'U.png')]
 
-    imgs = [img.astype('uint8') * 255 for img in imgs]
+    imgs = [(img * 255).astype('uint8') for img in imgs]
     np.save('baselines.npy', imgs)
 
 

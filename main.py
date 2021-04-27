@@ -1,3 +1,5 @@
+import time
+
 import cv2
 import numpy as np
 import helper_functions
@@ -78,6 +80,9 @@ def main():
     cap = cv2.VideoCapture(0)  # May need this parameter -> CAP_DSHOW
     cap.set(3, 1280)
     cap.set(4, 720)
+
+    print("OPENING CAMERA")
+    time.sleep(2)
 
     while True:
         ret, frame = cap.read()
