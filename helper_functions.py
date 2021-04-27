@@ -1,6 +1,26 @@
+import cv2
+import os
 import numpy as np
 from matplotlib import pyplot as plt
-import os, cv2
+
+
+def get_control_lines(im0, im1, pts0, pts1, clr_str='rgbycmwk'):
+    canvas_shape = (max(im0.shape[0], im1.shape[0]), im0.shape[1] + im1.shape[1], 3)
+    canvas = np.zeros(canvas_shape, dtype=type(im1[0, 0, 0]))
+    canvas[:im0.shape[0], :im0.shape[1]] = im0
+    canvas[:im1.shape[0], im0.shape[1]:canvas.shape[1]] = im1
+    fig, ax = plt.subplots(figsize=(8, 4))
+    ax.imshow(canvas)
+    ax.axis('off')
+    pts2 = pts1 + np.array([im0.shape[1], 0])
+    for i in range(pts0.shape[0]):
+        ax.plot([pts0[i, 0], pts2[i, 0]], [pts0[i, 1], pts2[i, 1]], color=clr_str[i % len(clr_str)], linewidth=1.0)
+
+    fig.canvas.draw()
+    img = np.fromstring(fig.canvas.tostring_rgb(), dtype=np.uint8, sep='')
+    img = img.reshape(fig.canvas.get_width_height()[::-1] + (3,))
+
+    return img
 
 
 def save_card_baselines():
@@ -75,6 +95,9 @@ def save_all_cards():
     cards['Y-P'] = plt.imread(path + 'Y-P.png')
     cards['Y-R'] = plt.imread(path + 'Y-R.png')
     cards['Y-S'] = plt.imread(path + 'Y-S.png')
+
+    for key, card in cards.items():
+        cards[key] = (card * 255).astype('uint8')
 
     np.save('all_cards.npy', [cards])
 

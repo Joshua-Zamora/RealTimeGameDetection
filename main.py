@@ -15,7 +15,8 @@ def select_matches_ransac(pts0, pts1):
 def get_best_match_info(cards, keys_descriptors, frame):
     most_matches = 0  # Keeps track of most Orb matches
     index = None  # Index # of image
-    coordinates = None  # Coordinates of the orb similarities
+    coordinates_x = None  # Coordinates of the orb similarities
+    coordinates_y = None
 
     frame_keys, frame_desc = orb.detectAndCompute(frame, mask=None)
     frame_points = np.array([p.pt for p in frame_keys])
@@ -25,18 +26,21 @@ def get_best_match_info(cards, keys_descriptors, frame):
         descriptor = keys_descriptors[i][1]
         matches = matcher.match(frame_desc, descriptor)
 
+        dist = np.array([m.distance for m in matches])
         ind1 = np.array([m.queryIdx for m in matches])
         ind2 = np.array([m.trainIdx for m in matches])
         card_points = np.array([p.pt for p in keys])
+        ds = np.argsort(dist)
 
-        current_coordinates, _ = select_matches_ransac(frame_points[ind1], card_points[ind2])
+        current_coordinates_x, current_coordinates_y = select_matches_ransac(frame_points[ind1[ds]], card_points[ind2[ds]])
 
-        if current_coordinates.shape[0] > most_matches:
-            most_matches = current_coordinates.shape[0]
-            coordinates = current_coordinates
+        if current_coordinates_x.shape[0] > most_matches:
+            most_matches = current_coordinates_x.shape[0]
+            coordinates_x = current_coordinates_x
+            coordinates_y = current_coordinates_y
             index = i
 
-    return coordinates, index
+    return coordinates_x, coordinates_y, index
 
 
 def get_card_color(coordinates, match):
@@ -49,7 +53,7 @@ def get_card_color(coordinates, match):
     green = np.mean(match[min_x: max_x, min_y: max_y][:, :, 1])  # Average green channel value
     blue = np.mean(match[min_x: max_x, min_y: max_y][:, :, 0])  # Average blue channel value
 
-    if red > 200 and green > 200 and blue < 50:  # Yellow color is defined by (255, 255, 0)
+    if red > 175 and green > 175 and blue < 75:  # Yellow color is defined by (255, 255, 0)
         color = 'Y'
     elif red > green and red > blue:
         color = 'R'
@@ -80,16 +84,18 @@ def main():
         if not ret:
             print("Video capture unresponsive")
             break
-        cv2.imshow('frame', frame)  # Show web cam frame
 
-        coordinates, index = get_best_match_info(baselines, keys_descriptors, frame)
+        coordinates_x, coordinates_y, index = get_best_match_info(baselines, keys_descriptors, frame)
 
         if index < 13:  # If image is colored
-            best_match = cards[get_card_color(coordinates, frame) + '-' + identifiers[index]]
+            best_match = cards[get_card_color(coordinates_x, frame) + '-' + identifiers[index]]
         else:
             best_match = cards[identifiers[index]]
 
-        cv2.imshow('match', cv2.cvtColor(best_match, cv2.COLOR_BGR2RGB))  # Show match
+        combined = helper_functions.get_control_lines(cv2.cvtColor(best_match, cv2.COLOR_BGR2RGB),
+                                                      frame, coordinates_y, coordinates_x)
+
+        cv2.imshow('match', combined)  # Show frame with matching correspondence points
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
