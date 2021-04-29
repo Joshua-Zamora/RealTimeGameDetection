@@ -9,7 +9,7 @@ matcher = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
 
 
 def select_matches_ransac(pts0, pts1):
-    H, mask = cv2.findHomography(pts0.reshape(-1, 1, 2), pts1.reshape(-1, 1, 2), cv2.RANSAC, 5.0)
+    H, mask = cv2.findHomography(pts0.reshape(-1, 1, 2), pts1.reshape(-1, 1, 2), cv2.RANSAC, 3.0)
     choice = np.where(mask.reshape(-1) == 1)[0]
     return pts0[choice], pts1[choice]
 
@@ -77,13 +77,14 @@ def main():
                    '8', '9', 'P', 'R',
                    'S', '4', 'E', 'W', 'U']  # Card identities
 
-    cap = cv2.VideoCapture(0)  # May need this parameter -> CAP_DSHOW
-    cap.set(3, 1280)
-    cap.set(4, 720)
+    cap = cv2.VideoCapture('Test.mp4')  # May need this parameter -> CAP_DSHOW
+    # cap.set(3, 1280)
+    # cap.set(4, 720)
 
     print("OPENING CAMERA")
-    time.sleep(2)
+    # time.sleep(2)
 
+    movie = []
     while True:
         ret, frame = cap.read()
         if not ret:
@@ -100,11 +101,13 @@ def main():
         combined = helper_functions.get_control_lines(cv2.cvtColor(best_match, cv2.COLOR_BGR2RGB),
                                                       frame, coordinates_y, coordinates_x)
 
+        movie.append(combined)
         cv2.imshow('match', combined)  # Show frame with matching correspondence points
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
+    helper_functions.save_frames(movie)
     cap.release()
     cv2.destroyAllWindows()
 

@@ -4,6 +4,16 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 
+def save_frames(movie):
+    fourcc = cv2.VideoWriter_fourcc(*'XVID')
+    out = cv2.VideoWriter('Test_vid.avi', fourcc, 30, (movie[0].shape[0], movie[0].shape[1]))
+
+    for frame in movie:
+        out.write(cv2.cvtColor(frame, cv2.COLOR_RGB2BGR))
+
+    out.release()
+
+
 def get_control_lines(im0, im1, pts0, pts1, clr_str='rgbycmwk'):
     canvas_shape = (max(im0.shape[0], im1.shape[0]), im0.shape[1] + im1.shape[1], 3)
     canvas = np.zeros(canvas_shape, dtype=type(im1[0, 0, 0]))
