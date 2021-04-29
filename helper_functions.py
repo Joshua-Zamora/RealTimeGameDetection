@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 
 def save_frames(movie):
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-    out = cv2.VideoWriter('Test_vid.mp4', fourcc, 30, (movie[0].shape[1], movie[0].shape[0]))
+    out = cv2.VideoWriter('3.mp4', fourcc, 30, (movie[0].shape[1], movie[0].shape[0]))
 
     for frame in movie:
         out.write(frame)
