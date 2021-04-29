@@ -5,11 +5,11 @@ from matplotlib import pyplot as plt
 
 
 def save_frames(movie):
-    fourcc = cv2.VideoWriter_fourcc(*'XVID')
-    out = cv2.VideoWriter('Test_vid.avi', fourcc, 30, (movie[0].shape[0], movie[0].shape[1]))
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+    out = cv2.VideoWriter('Test_vid.mp4', fourcc, 30, (movie[0].shape[1], movie[0].shape[0]))
 
     for frame in movie:
-        out.write(cv2.cvtColor(frame, cv2.COLOR_RGB2BGR))
+        out.write(frame)
 
     out.release()
 
